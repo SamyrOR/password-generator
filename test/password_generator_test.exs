@@ -4,7 +4,7 @@ defmodule PasswordGeneratorTest do
 
   setup do
     options = %{
-      "length" => "10",
+      "length" => 10,
       "numbers" => false,
       "uppercase" => false,
       "symbols" => false
@@ -27,7 +27,7 @@ defmodule PasswordGeneratorTest do
   end
 
   test "should throw a error when no lenght is giver" do
-    options = %{"invalid" => "false"}
+    options = %{"invalid" => false}
 
     assert {:error, _error} = PasswordGenerator.generate(options)
   end
@@ -39,7 +39,7 @@ defmodule PasswordGeneratorTest do
   end
 
   test "should return a lowercase string just with the length", %{options_type: options} do
-    length_option = %{"length" => "5"}
+    length_option = %{"length" => 5}
     {:ok, result} = PasswordGenerator.generate(length_option)
 
     assert String.contains?(result, options.lowercase)
@@ -51,23 +51,23 @@ defmodule PasswordGeneratorTest do
 
   test "should throw a error when options values are not booleans" do
     options = %{
-      "length" => "10",
+      "length" => 10,
       "numbers" => "invalid",
-      "uppercase" => "0",
-      "symbols" => "false"
+      "uppercase" => 0,
+      "symbols" => false
     }
 
     assert {:error, _error} = PasswordGenerator.generate(options)
   end
 
   test "should throw error when options not allowed" do
-    options = %{"length" => "5", "invalid" => "true"}
+    options = %{"length" => 5, "invalid" => true}
 
     assert {:error, _error} = PasswordGenerator.generate(options)
   end
 
   test "should throw error when 1 options not allowed" do
-    options = %{"length" => "5", "numbers" => "true", "invalid" => "true"}
+    options = %{"length" => 5, "numbers" => true, "invalid" => true}
 
     assert {:error, _error} = PasswordGenerator.generate(options)
   end
