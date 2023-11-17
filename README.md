@@ -1,6 +1,8 @@
 # PasswordGenerator
 
-**TODO: Add description**
+A basic project to learn and practice Elixir
+Learned:
+- [x] TDD
 
 ## Installation
 
