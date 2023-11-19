@@ -10,15 +10,11 @@ defmodule PasswordGeneratorTest do
     }
 
     options_type = %{
-      lowercase: Enum.map(?a..?z, &<<&1>>),
-      numbers: Enum.map(0..9, & &1),
+      lowercase_letter: Enum.map(?a..?z, &<<&1>>),
+      numbers: Enum.map(0..9, &to_string(&1)),
       uppercase: Enum.map(?A..?Z, &<<&1>>),
       symbols: String.split("!#$%&()*+,-./:;<=>?@[]^_{|}~^", "", trim: true)
     }
-
-    # {:ok, result} = PasswordGenerator.generate(options)
-
-    %{options_type: options_type}
   end
 
   test "should return a string" do
@@ -45,15 +41,16 @@ defmodule PasswordGeneratorTest do
     assert {:error, _error} = PasswordGenerator.generate(options)
   end
 
-  test "should return a lowercase string just with the length", %{options_type: options} do
+  test "should return a lowercase string just with the length", options_type do
     length_option = %{:length => 5}
     {:ok, result} = PasswordGenerator.generate(length_option)
 
-    assert String.contains?(result, options.lowercase)
+    assert String.contains?(result, options_type.lowercase_letter)
+    assert result |> to_charlist |> length() == length_option.length
 
-    refute String.contains?(result, options.numbers)
-    refute String.contains?(result, options.uppercase)
-    refute String.contains?(result, options.symbols)
+    refute String.contains?(result, options_type.numbers)
+    refute String.contains?(result, options_type.uppercase)
+    refute String.contains?(result, options_type.symbols)
   end
 
   test "should throw a error when options values are not booleans" do
@@ -79,7 +76,7 @@ defmodule PasswordGeneratorTest do
     assert {:error, _error} = PasswordGenerator.generate(options)
   end
 
-  test "should return a upper and lower case string", %{options_type: options} do
+  test "should return a upper and lower case string", options_type do
     options = %{
       :length => 10,
       :numbers => false,
@@ -89,13 +86,14 @@ defmodule PasswordGeneratorTest do
 
     {:ok, result} = PasswordGenerator.generate(options)
 
-    assert String.contains?(result, options.lowercase)
+    assert String.contains?(result, options_type[:lowercase_letter])
+    assert result |> to_charlist |> length() == options.length
 
-    refute String.contains?(result, options.numbers)
-    refute String.contains?(result, options.symbols)
+    refute String.contains?(result, options_type[:numbers])
+    refute String.contains?(result, options_type[:symbols])
   end
 
-  test "should return a lower case string with numbers", %{options_type: options} do
+  test "should return a lower case string with numbers", options_type do
     options = %{
       :length => 10,
       :numbers => true,
@@ -105,13 +103,15 @@ defmodule PasswordGeneratorTest do
 
     {:ok, result} = PasswordGenerator.generate(options)
 
-    assert String.contains?(result, options.lowercase)
+    assert String.contains?(result, options_type[:lowercase_letter])
+    assert String.contains?(result, options_type[:numbers])
+    assert result |> to_charlist |> length() == options.length
 
-    refute String.contains?(result, options.uppercase)
-    refute String.contains?(result, options.symbols)
+    refute String.contains?(result, options_type[:uppercase])
+    refute String.contains?(result, options_type[:symbols])
   end
 
-  test "should return a lower case string with symbols", %{options_type: options} do
+  test "should return a lower case string with symbols", options_type do
     options = %{
       :length => 10,
       :numbers => false,
@@ -121,9 +121,11 @@ defmodule PasswordGeneratorTest do
 
     {:ok, result} = PasswordGenerator.generate(options)
 
-    assert String.contains?(result, options.lowercase)
+    assert String.contains?(result, options_type[:lowercase_letter])
+    assert String.contains?(result, options_type[:symbols])
+    assert result |> to_charlist |> length() == options.length
 
-    refute String.contains?(result, options.uppercase)
-    refute String.contains?(result, options.numbers)
+    refute String.contains?(result, options_type[:uppercase])
+    refute String.contains?(result, options_type[:numbers])
   end
 end

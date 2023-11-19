@@ -55,8 +55,7 @@ defmodule PasswordGenerator do
   defp validate_is_length_integer(true, options) do
     options_without_length = Map.delete(options, :length)
     options_values = Map.values(options_without_length)
-    values_are_boolean = options_values |> Enum.all?(&IO.puts(is_boolean(&1)))
-
+    values_are_boolean = options_values |> Enum.all?(&is_boolean(&1))
     validate_options_values_are_boolean(values_are_boolean, options)
   end
 
@@ -65,10 +64,16 @@ defmodule PasswordGenerator do
   end
 
   defp validate_options_values_are_boolean(true, options) do
-    # options_without_length = Map.delete(options, :length) |> included_options()
-    # treated_options = %{options_without_length | :length => options[:length]}
+    filtered_options = included_options(options)
     invalid_options? = Enum.any?(options, fn {key, _value} -> key not in @allowed_options end)
-    validate_options(invalid_options?, options)
+
+    validate_options(invalid_options?, filtered_options)
+  end
+
+  defp included_options(options) do
+    Enum.filter(options, fn {_key, value} -> value == true end)
+    |> Enum.into(%{})
+    |> Map.put(:length, options[:length])
   end
 
   defp validate_options(true, _options) do
@@ -90,9 +95,9 @@ defmodule PasswordGenerator do
 
   defp get_result(strings) do
     string =
-      strings |> Enum.shuffle() |> to_string()
+      strings |> Enum.shuffle() |> List.to_string()
 
-    {:ok, Enum.join(for <<c::utf8 <- string>>, do: <<c::utf8>>)}
+    {:ok, string}
   end
 
   defp include(options) do
@@ -100,15 +105,15 @@ defmodule PasswordGenerator do
   end
 
   defp get(:lowercase_letter) do
-    Enum.random(?a..?z)
+    <<Enum.random(?a..?z)>>
   end
 
   defp get(:numbers) do
-    Enum.random(0..9)
+    Enum.random(0..9) |> Integer.to_string()
   end
 
   defp get(:uppercase) do
-    Enum.random(?A..?Z)
+    <<Enum.random(?A..?Z)>>
   end
 
   defp get(:symbols) do
